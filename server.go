@@ -6,20 +6,39 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"text/template"
 )
 
 type Server struct {
 	port int
 }
 
+type SlideParam struct {
+}
+
 func (server *Server) Serve() {
 	fmt.Printf("Accepting connections at http://0:%d/\n", server.port)
+	http.HandleFunc("/", server.HandleRoot)
 	http.HandleFunc("/revealjs/", server.HandleStatic)
 	http.ListenAndServe(fmt.Sprintf(":%d", server.port), nil)
 }
 
-func (server *Server) HandleExample(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "revealgo!")
+func (server *Server) HandleRoot(w http.ResponseWriter, r *http.Request) {
+	data, err := Asset("assets/templates/slide.html")
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		http.NotFound(w, r)
+		return
+	}
+	tmpl := template.New("slide template")
+	tmpl.Parse(string(data))
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		http.NotFound(w, r)
+		return
+	}
+	param := SlideParam{}
+	err = tmpl.Execute(w, param)
 }
 
 func (server *Server) HandleStatic(w http.ResponseWriter, r *http.Request) {
