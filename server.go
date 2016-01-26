@@ -2,28 +2,57 @@ package revealgo
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"text/template"
 )
 
 type Server struct {
-	port int
+	port   int
+	mdpath string
 }
 
 type SlideParam struct {
+	Path string
 }
 
 func (server *Server) Serve() {
-	fmt.Printf("Accepting connections at http://0:%d/\n", server.port)
+	port := 3000
+	if server.port > 0 {
+		port = server.port
+	}
+	fmt.Printf("accepting connections at http://0:%d/\n", port)
 	http.HandleFunc("/", server.HandleRoot)
 	http.HandleFunc("/revealjs/", server.HandleStatic)
-	http.ListenAndServe(fmt.Sprintf(":%d", server.port), nil)
+	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
 
 func (server *Server) HandleRoot(w http.ResponseWriter, r *http.Request) {
+
+	urlPath := r.URL.Path
+	path, err := filepath.Rel("./", "."+urlPath)
+	if err != nil {
+		log.Printf("error:%v\n", err)
+	}
+	_, err = os.Stat(path)
+	if err == nil {
+		data, err := ioutil.ReadFile(path)
+		if err == nil {
+			mimeType := server.DetectContentType(path, data)
+			w.Header().Set("Content-Type", mimeType)
+			w.Header().Set("Content-Length", strconv.Itoa(len(data)))
+			if _, err := w.Write(data); err != nil {
+				log.Println("unable to write data.")
+			}
+			return
+		}
+	}
+
 	data, err := Asset("assets/templates/slide.html")
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
@@ -37,7 +66,9 @@ func (server *Server) HandleRoot(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	param := SlideParam{}
+	param := SlideParam{
+		Path: server.mdpath,
+	}
 	err = tmpl.Execute(w, param)
 }
 
