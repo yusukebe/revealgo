@@ -1,0 +1,16 @@
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+*.o
+*.a
+*.so
+_obj
+_test
+*.exe
+*.test
+*.prof

@@ -1,0 +1,6 @@
+[submodule "revealjs"]
+	path = revealjs
+	url = git@github.com:hakimel/reveal.js.git
+[submodule "assets/revealjs"]
+	path = assets/revealjs
+	url = git@github.com:hakimel/reveal.js.git
