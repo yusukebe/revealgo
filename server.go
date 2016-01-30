@@ -17,7 +17,7 @@ type Server struct {
 	mdpath string
 }
 
-type SlideParam struct {
+type slideParam struct {
 	Path string
 }
 
@@ -27,12 +27,12 @@ func (server *Server) Serve() {
 		port = server.port
 	}
 	fmt.Printf("accepting connections at http://0:%d/\n", port)
-	http.HandleFunc("/", server.HandleRoot)
-	http.HandleFunc("/revealjs/", server.HandleStatic)
+	http.HandleFunc("/", server.handleRoot)
+	http.HandleFunc("/revealjs/", server.handleStatic)
 	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
 
-func (server *Server) HandleRoot(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
 
 	urlPath := r.URL.Path
 	path, err := filepath.Rel("./", "."+urlPath)
@@ -43,7 +43,7 @@ func (server *Server) HandleRoot(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		data, err := ioutil.ReadFile(path)
 		if err == nil {
-			mimeType := server.DetectContentType(path, data)
+			mimeType := server.detectContentType(path, data)
 			w.Header().Set("Content-Type", mimeType)
 			w.Header().Set("Content-Length", strconv.Itoa(len(data)))
 			if _, err := w.Write(data); err != nil {
@@ -66,20 +66,20 @@ func (server *Server) HandleRoot(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	param := SlideParam{
+	param := slideParam{
 		Path: server.mdpath,
 	}
 	err = tmpl.Execute(w, param)
 }
 
-func (server *Server) HandleStatic(w http.ResponseWriter, r *http.Request) {
+func (server *Server) handleStatic(w http.ResponseWriter, r *http.Request) {
 	filepath := "assets" + r.URL.Path
 	data, err := Asset(filepath)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
-	mimeType := server.DetectContentType(filepath, data)
+	mimeType := server.detectContentType(filepath, data)
 	w.Header().Set("Content-Type", mimeType)
 	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
 	if _, err := w.Write(data); err != nil {
@@ -87,7 +87,7 @@ func (server *Server) HandleStatic(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (server *Server) DetectContentType(path string, data []byte) string {
+func (server *Server) detectContentType(path string, data []byte) string {
 	if strings.HasSuffix(path, ".css") {
 		return "text/css"
 	} else if strings.HasSuffix(path, ".js") {
