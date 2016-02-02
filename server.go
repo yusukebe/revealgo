@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
-	"regexp"
 )
 
 type Server struct {
@@ -95,10 +94,10 @@ func (h *rootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func addExtention(path string, ext string) string {
-	r := regexp.MustCompile(fmt.Sprintf("%s$", ext))
-	if r.MatchString(path) == false {
-		path = fmt.Sprintf("%s.%s", path, ext)
+	if strings.HasSuffix(path, fmt.Sprintf(".%s", ext)) {
+		return path
 	}
+	path = fmt.Sprintf("%s.%s", path, ext)
 	return path
 }
 

@@ -16,3 +16,4 @@ _test
 *.prof
 tmp/
 example.md
+cover.out
