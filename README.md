@@ -31,7 +31,7 @@ Available options:
 
 ### Sample Makrdown
 
-```markdown
+```
 ## This is an H2 Title
 
 Description...
