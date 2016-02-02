@@ -56,6 +56,20 @@ ___
 You can add slide attributes like above.
 ```
 
+### Customize Theme
+
+Get default theme:
+
+```
+$ curl http://localhost:3000/revealjs/css/theme/black.css > original.css
+```
+
+Edit `original.css`, And then run `revealgo` with `--theme` option:
+
+```
+$ revealgo --theme original.css slide.md
+```
+
 ## See Also
 
 * reveal.js <https://github.com/hakimel/reveal.js/>
