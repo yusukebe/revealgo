@@ -29,6 +29,16 @@ Available options:
 --transition          transition effect for slides: default, cube, page, concave, zoom, linear, fade, none
 ```
 
+### Screenshots
+
+Run `revealgo` command:
+
+![Command Line](https://cloud.githubusercontent.com/assets/10682/12741641/b5afb504-c9c1-11e5-94d6-c364912cfcc2.png)
+
+Open the server address with your web browser:
+
+![Slides](https://cloud.githubusercontent.com/assets/10682/12741672/f9cda548-c9c1-11e5-9c21-fcaf1af3cdf4.png)
+
 ### Sample Makrdown
 
 ```
