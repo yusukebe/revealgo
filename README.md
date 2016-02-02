@@ -15,7 +15,7 @@ $ go get github.com/yusukebe/revealgo/cmd/revealgo
 The usage:
 
 ```
-$ revealgo [options] MARKDOWN_NAME
+$ revealgo [options] MARKDOWN_FILE
 ```
 
 Available options:
