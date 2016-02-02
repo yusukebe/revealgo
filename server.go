@@ -14,41 +14,54 @@ import (
 
 type Server struct {
 	port   int
-	mdpath string
 }
 
 type slideParam struct {
 	Path string
 }
 
-func (server *Server) Serve() {
+func (server *Server) Serve(markdownPath string) {
 	port := 3000
 	if server.port > 0 {
 		port = server.port
 	}
-	fmt.Printf("accepting connections at http://0:%d/\n", port)
-	http.HandleFunc("/", server.handleRoot)
-	http.HandleFunc("/revealjs/", server.handleStatic)
-	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	fmt.Printf("accepting connections at http://*:%d/\n", port)
+	http.Handle("/", &rootHandler{ markdownPath : markdownPath })
+	http.Handle("/revealjs/", &assetHandler{ assetPath : "assets"})
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
+		log.Fatal("ListenAndServe:", err)
+	}
 }
 
-func (server *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
+type assetHandler struct {
+	assetPath string
+}
 
+func (h *assetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	filepath := h.assetPath + r.URL.Path
+	data, err := Asset(filepath)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	w = setResponse(w, filepath, data)
+}
+
+type rootHandler struct {
+	markdownPath string
+}
+
+func (h *rootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	urlPath := r.URL.Path
 	path, err := filepath.Rel("./", "."+urlPath)
 	if err != nil {
-		log.Printf("error:%v\n", err)
+		log.Fatal("error:%v\n", err)
 	}
 	_, err = os.Stat(path)
 	if err == nil {
 		data, err := ioutil.ReadFile(path)
 		if err == nil {
-			mimeType := server.detectContentType(path, data)
-			w.Header().Set("Content-Type", mimeType)
-			w.Header().Set("Content-Length", strconv.Itoa(len(data)))
-			if _, err := w.Write(data); err != nil {
-				log.Println("unable to write data.")
-			}
+			w = setResponse(w, path, data)
 			return
 		}
 	}
@@ -66,32 +79,25 @@ func (server *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	param := slideParam{
-		Path: server.mdpath,
-	}
+	param := slideParam{Path: h.markdownPath}
 	err = tmpl.Execute(w, param)
 }
 
-func (server *Server) handleStatic(w http.ResponseWriter, r *http.Request) {
-	filepath := "assets" + r.URL.Path
-	data, err := Asset(filepath)
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-	mimeType := server.detectContentType(filepath, data)
-	w.Header().Set("Content-Type", mimeType)
-	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
-	if _, err := w.Write(data); err != nil {
-		log.Println("unable to write data.")
-	}
-}
-
-func (server *Server) detectContentType(path string, data []byte) string {
+func detectContentType(path string, data []byte) string {
 	if strings.HasSuffix(path, ".css") {
 		return "text/css"
 	} else if strings.HasSuffix(path, ".js") {
 		return "application/javascript"
 	}
 	return http.DetectContentType(data)
+}
+
+func setResponse(w http.ResponseWriter, path string, data []byte) http.ResponseWriter {
+	mimeType := detectContentType(path, data)
+	w.Header().Set("Content-Type", mimeType)
+	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
+	if _, err := w.Write(data); err != nil {
+		log.Fatal("unable to write data.")
+	}
+	return w
 }

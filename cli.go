@@ -3,6 +3,7 @@ package revealgo
 import (
 	"fmt"
 	"os"
+	"reflect"
 
 	flags "github.com/jessevdk/go-flags"
 )
@@ -15,27 +16,41 @@ type CLIOptions struct {
 }
 
 func (cli *CLI) Run() {
-	opts, args, err := cli.parseOptions()
+	opts, args, err := parseOptions()
 	if err != nil {
 		fmt.Printf("error:%v\n", err)
 		os.Exit(1)
 	}
 	if len(args) < 1 {
-		cli.showHelp()
-		os.Exit(1)
+		showHelp()
+		os.Exit(0)
 	}
 	server := Server{
 		port:   opts.Port,
-		mdpath: args[0],
 	}
-	server.Serve()
+	server.Serve( args[0] )
 }
 
-func (cli *CLI) showHelp() {
-	fmt.Println("Help...")
+func showHelp() {
+	fmt.Fprint( os.Stderr, `Usage: revealgo [options] [FILE]
+
+Options:
+`)
+
+	t := reflect.TypeOf(CLIOptions{})
+	for i := 0; i < t.NumField(); i++ {
+		tag := t.Field(i).Tag
+		var o string
+		if s := tag.Get("short"); s != "" {
+			o = fmt.Sprintf("-%s, --%s", tag.Get("short"), tag.Get("long"))
+		} else {
+			o = fmt.Sprintf("-%s", tag.Get("long"))
+		}
+		fmt.Fprintf(	os.Stderr, "  %-21s %s\n", o, tag.Get("description") )
+	}
 }
 
-func (cli *CLI) parseOptions() (*CLIOptions, []string, error) {
+func parseOptions() (*CLIOptions, []string, error) {
 	opts := &CLIOptions{}
 	p := flags.NewParser(opts, flags.PrintErrors)
 	args, err := p.Parse()
