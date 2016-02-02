@@ -70,20 +70,20 @@ func (h *rootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	data, err := Asset("assets/templates/slide.html")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("error:%v\n", err)
 		http.NotFound(w, r)
 		return
 	}
 	tmpl := template.New("slide template")
 	tmpl.Parse(string(data))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("error:%v\n", err)
 		http.NotFound(w, r)
 		return
 	}
 	err = tmpl.Execute(w, h.param)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("error:%v\n", err)
 	}
 }
 

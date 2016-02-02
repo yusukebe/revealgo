@@ -2,6 +2,10 @@ package revealgo
 
 import (
 	"testing"
+	"net/http"
+	"net/http/httptest"
+	"bytes"
+	"regexp"
 )
 
 func TestDetectContentType(t *testing.T) {
@@ -22,3 +26,58 @@ func TestDetectContentType(t *testing.T) {
 	}
 }
 
+func TestRootHandler(t *testing.T) {
+	param := ServerParam{
+		Path: "slide.md",
+		Theme: "beige.css",
+		Transition: "fade",
+	}
+	ts := httptest.NewServer(&rootHandler{ param : param })
+	defer ts.Close()
+
+	res, err := http.Get( ts.URL )
+	if err != nil {
+		t.Errorf("unexpected\n")
+	}
+	if res.StatusCode != 200 {
+		t.Errorf("server status error\n")
+	}
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(res.Body)
+	s := buf.String()
+
+	match := "revealjs/css/theme/beige.css"
+	r := regexp.MustCompile(match)
+	if r.MatchString(s) == false {
+		t.Errorf("content do not match %v\n", match)
+	}
+
+	match = `data-markdown="slide.md"`
+	r = regexp.MustCompile(match)
+	if r.MatchString(s) == false {
+		t.Errorf("content do not match %v\n", match)
+	}
+
+	match = `|| 'zoom',`
+	r = regexp.MustCompile(match)
+	if r.MatchString(s) == false {
+		t.Errorf("content do not match %v\n", match)
+	}
+}
+
+func TestAssetHandler(t *testing.T) {
+	ts := httptest.NewServer(&assetHandler{ assetPath : "assets" })
+	defer ts.Close()
+
+	res, err := http.Get( ts.URL + "/revealjs/js/reveal.js")
+	if err != nil {
+		t.Errorf("unexpected\n")
+	}
+	if res.StatusCode != 200 {
+		t.Errorf("server status error\n")
+	}
+	if res.Header.Get("Content-Type") != "application/javascript" {
+		t.Errorf("content type error\n")
+	}
+}
