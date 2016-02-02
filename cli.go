@@ -14,7 +14,7 @@ type CLI struct {
 
 type CLIOptions struct {
 	Port int `short:"p" long:"port" description:"tcp port number of this server. default is 3000."`
-	Theme string `long:"theme" description:"slide theme name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
+	Theme string `long:"theme" description:"slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
 	Transition string `long:"transition" description:"transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"zoom"`
 }
 
@@ -29,6 +29,12 @@ func (cli *CLI) Run() {
 		os.Exit(0)
 	}
 	
+	_, err = os.Stat(opts.Theme)
+	originalTheme := false
+	if err == nil {
+		originalTheme = true
+	}
+	
 	server := Server{
 		port:   opts.Port,
 	}
@@ -36,6 +42,7 @@ func (cli *CLI) Run() {
 		Path: args[0],
 		Theme: addExtention(opts.Theme, "css"),
 		Transition: opts.Transition,
+		OriginalTheme: originalTheme,
 	}
 	server.Serve(param)
 }

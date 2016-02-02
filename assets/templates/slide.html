@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="revealjs/css/reveal.css">
-    <link rel="stylesheet" href="revealjs/css/theme/{{.Theme}}" id="theme">
+    <link rel="stylesheet" {{if .OriginalTheme}} href="{{.Theme}}" {{else}} href="revealjs/css/theme/{{.Theme}}" {{end}} id="theme">
     <link rel="stylesheet" href="revealjs/lib/css/zenburn.css">
     <!-- If the query includes 'print-pdf', use the PDF print sheet -->
     <script>

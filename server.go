@@ -19,6 +19,7 @@ type Server struct {
 type ServerParam struct {
 	Path string
 	Theme string
+	OriginalTheme bool
 	Transition string
 }
 
@@ -57,7 +58,7 @@ func (h *rootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	urlPath := r.URL.Path
 	path, err := filepath.Rel("./", "."+urlPath)
 	if err != nil {
-		log.Fatal("error:%v\n", err)
+		log.Fatalf("error:%v", err)
 	}
 	_, err = os.Stat(path)
 	if err == nil {
@@ -70,20 +71,20 @@ func (h *rootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	data, err := Asset("assets/templates/slide.html")
 	if err != nil {
-		log.Fatal("error:%v\n", err)
+		log.Printf("error:%v", err)
 		http.NotFound(w, r)
 		return
 	}
 	tmpl := template.New("slide template")
 	tmpl.Parse(string(data))
 	if err != nil {
-		log.Fatal("error:%v\n", err)
+		log.Printf("error:%v", err)
 		http.NotFound(w, r)
 		return
 	}
 	err = tmpl.Execute(w, h.param)
 	if err != nil {
-		log.Fatal("error:%v\n", err)
+		log.Fatalf("error:%v", err)
 	}
 }
 
