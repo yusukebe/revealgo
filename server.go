@@ -10,23 +10,27 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"regexp"
 )
 
 type Server struct {
 	port   int
+	markdownPath string
+	theme string
 }
 
 type slideParam struct {
 	Path string
+	Theme string
 }
 
-func (server *Server) Serve(markdownPath string) {
+func (server *Server) Serve() {
 	port := 3000
 	if server.port > 0 {
 		port = server.port
 	}
 	fmt.Printf("accepting connections at http://*:%d/\n", port)
-	http.Handle("/", &rootHandler{ markdownPath : markdownPath })
+	http.Handle("/", &rootHandler{ markdownPath : server.markdownPath, theme : server.theme })
 	http.Handle("/revealjs/", &assetHandler{ assetPath : "assets"})
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
@@ -49,6 +53,7 @@ func (h *assetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 type rootHandler struct {
 	markdownPath string
+	theme string
 }
 
 func (h *rootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -68,19 +73,33 @@ func (h *rootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	data, err := Asset("assets/templates/slide.html")
 	if err != nil {
-		fmt.Printf("error: %v\n", err)
+		log.Fatal(err)
 		http.NotFound(w, r)
 		return
 	}
 	tmpl := template.New("slide template")
 	tmpl.Parse(string(data))
 	if err != nil {
-		fmt.Printf("error: %v\n", err)
+		log.Fatal(err)
 		http.NotFound(w, r)
 		return
 	}
-	param := slideParam{Path: h.markdownPath}
+	param := slideParam{
+		Path: h.markdownPath,
+		Theme: addExtention(h.theme, "css"),
+	}
 	err = tmpl.Execute(w, param)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func addExtention(path string, ext string) string {
+	r := regexp.MustCompile(fmt.Sprintf("%s$", ext))
+	if r.MatchString(path) == false {
+		path = fmt.Sprintf("%s.%s", path, ext)
+	}
+	return path
 }
 
 func detectContentType(path string, data []byte) string {
