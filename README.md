@@ -15,8 +15,10 @@ $ go get github.com/yusukebe/revealgo/cmd/revealgo
 The usage:
 
 ```
-$ revealgo [options] MARKDOWN_FILE
+$ revealgo [options] MARKDOWN-FILE-NAME
 ```
+
+Then access the local web server such as `http://localhost:3000` with Chrome, Firefox, or Safari.
 
 Available options:
 
