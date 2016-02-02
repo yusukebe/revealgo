@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strings"
 
 	flags "github.com/jessevdk/go-flags"
 )
@@ -14,6 +15,7 @@ type CLI struct {
 type CLIOptions struct {
 	Port int `short:"p" long:"port" description:"tcp port number of this server. default is 3000."`
 	Theme string `long:"theme" description:"slide theme name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
+	Transition string `long:"transition" description:"transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"zoom"`
 }
 
 func (cli *CLI) Run() {
@@ -29,10 +31,13 @@ func (cli *CLI) Run() {
 	
 	server := Server{
 		port:   opts.Port,
-		markdownPath: args[0],
-		theme: opts.Theme,
 	}
-	server.Serve()
+	param := ServerParam{
+		Path: args[0],
+		Theme: addExtention(opts.Theme, "css"),
+		Transition: opts.Transition,
+	}
+	server.Serve(param)
 }
 
 func showHelp() {
@@ -40,7 +45,6 @@ func showHelp() {
 
 Options:
 `)
-
 	t := reflect.TypeOf(CLIOptions{})
 	for i := 0; i < t.NumField(); i++ {
 		tag := t.Field(i).Tag
@@ -62,4 +66,12 @@ func parseOptions() (*CLIOptions, []string, error) {
 		return nil, nil, err
 	}
 	return opts, args, nil
+}
+
+func addExtention(path string, ext string) string {
+	if strings.HasSuffix(path, fmt.Sprintf(".%s", ext)) {
+		return path
+	}
+	path = fmt.Sprintf("%s.%s", path, ext)
+	return path
 }

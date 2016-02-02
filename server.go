@@ -14,22 +14,21 @@ import (
 
 type Server struct {
 	port   int
-	markdownPath string
-	theme string
 }
 
-type slideParam struct {
+type ServerParam struct {
 	Path string
 	Theme string
+	Transition string
 }
 
-func (server *Server) Serve() {
+func (server *Server) Serve(param ServerParam) {
 	port := 3000
 	if server.port > 0 {
 		port = server.port
 	}
 	fmt.Printf("accepting connections at http://*:%d/\n", port)
-	http.Handle("/", &rootHandler{ markdownPath : server.markdownPath, theme : server.theme })
+	http.Handle("/", &rootHandler{ param : param })
 	http.Handle("/revealjs/", &assetHandler{ assetPath : "assets"})
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
@@ -51,8 +50,7 @@ func (h *assetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type rootHandler struct {
-	markdownPath string
-	theme string
+	param ServerParam
 }
 
 func (h *rootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -83,22 +81,10 @@ func (h *rootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	param := slideParam{
-		Path: h.markdownPath,
-		Theme: addExtention(h.theme, "css"),
-	}
-	err = tmpl.Execute(w, param)
+	err = tmpl.Execute(w, h.param)
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func addExtention(path string, ext string) string {
-	if strings.HasSuffix(path, fmt.Sprintf(".%s", ext)) {
-		return path
-	}
-	path = fmt.Sprintf("%s.%s", path, ext)
-	return path
 }
 
 func detectContentType(path string, data []byte) string {
