@@ -1,25 +1,25 @@
 package revealgo
 
 import (
-	"testing"
+	"bytes"
 	"net/http"
 	"net/http/httptest"
-	"bytes"
 	"regexp"
+	"testing"
 )
 
 func TestDetectContentType(t *testing.T) {
-	actual := detectContentType("/css/moon.css", []byte("h1 {};"), )
+	actual := detectContentType("/css/moon.css", []byte("h1 {};"))
 	expected := "text/css"
 	if actual != expected {
 		t.Errorf("got %v\n want %v", actual, expected)
 	}
-	actual = detectContentType("/js/hello.js", []byte("console('Hello')"), )
+	actual = detectContentType("/js/hello.js", []byte("console('Hello')"))
 	expected = "application/javascript"
 	if actual != expected {
 		t.Errorf("got %v\n want %v", actual, expected)
 	}
-	actual = detectContentType("/readme.txt", []byte("Hello"), )
+	actual = detectContentType("/readme.txt", []byte("Hello"))
 	expected = "text/plain; charset=utf-8"
 	if actual != expected {
 		t.Errorf("got %v\n want %v", actual, expected)
@@ -28,14 +28,14 @@ func TestDetectContentType(t *testing.T) {
 
 func TestRootHandler(t *testing.T) {
 	param := ServerParam{
-		Path: "slide.md",
-		Theme: "beige.css",
+		Path:       "slide.md",
+		Theme:      "beige.css",
 		Transition: "fade",
 	}
-	ts := httptest.NewServer(&rootHandler{ param : param })
+	ts := httptest.NewServer(&rootHandler{param: param})
 	defer ts.Close()
 
-	res, err := http.Get( ts.URL )
+	res, err := http.Get(ts.URL)
 	if err != nil {
 		t.Errorf("unexpected\n")
 	}
@@ -67,10 +67,10 @@ func TestRootHandler(t *testing.T) {
 }
 
 func TestAssetHandler(t *testing.T) {
-	ts := httptest.NewServer(&assetHandler{ assetPath : "assets" })
+	ts := httptest.NewServer(&assetHandler{assetPath: "assets"})
 	defer ts.Close()
 
-	res, err := http.Get( ts.URL + "/revealjs/js/reveal.js")
+	res, err := http.Get(ts.URL + "/revealjs/js/reveal.js")
 	if err != nil {
 		t.Errorf("unexpected\n")
 	}

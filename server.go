@@ -13,14 +13,14 @@ import (
 )
 
 type Server struct {
-	port   int
+	port int
 }
 
 type ServerParam struct {
-	Path string
-	Theme string
+	Path          string
+	Theme         string
 	OriginalTheme bool
-	Transition string
+	Transition    string
 }
 
 func (server *Server) Serve(param ServerParam) {
@@ -29,8 +29,8 @@ func (server *Server) Serve(param ServerParam) {
 		port = server.port
 	}
 	fmt.Printf("accepting connections at http://*:%d/\n", port)
-	http.Handle("/", &rootHandler{ param : param })
-	http.Handle("/revealjs/", &assetHandler{ assetPath : "assets"})
+	http.Handle("/", &rootHandler{param: param})
+	http.Handle("/revealjs/", &assetHandler{assetPath: "assets"})
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}

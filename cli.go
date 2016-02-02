@@ -13,8 +13,8 @@ type CLI struct {
 }
 
 type CLIOptions struct {
-	Port int `short:"p" long:"port" description:"tcp port number of this server. default is 3000."`
-	Theme string `long:"theme" description:"slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
+	Port       int    `short:"p" long:"port" description:"tcp port number of this server. default is 3000."`
+	Theme      string `long:"theme" description:"slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
 	Transition string `long:"transition" description:"transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"zoom"`
 }
 
@@ -28,27 +28,27 @@ func (cli *CLI) Run() {
 		showHelp()
 		os.Exit(0)
 	}
-	
+
 	_, err = os.Stat(opts.Theme)
 	originalTheme := false
 	if err == nil {
 		originalTheme = true
 	}
-	
+
 	server := Server{
-		port:   opts.Port,
+		port: opts.Port,
 	}
 	param := ServerParam{
-		Path: args[0],
-		Theme: addExtention(opts.Theme, "css"),
-		Transition: opts.Transition,
+		Path:          args[0],
+		Theme:         addExtention(opts.Theme, "css"),
+		Transition:    opts.Transition,
 		OriginalTheme: originalTheme,
 	}
 	server.Serve(param)
 }
 
 func showHelp() {
-	fmt.Fprint( os.Stderr, `Usage: revealgo [options] [MARKDOWN FILE]
+	fmt.Fprint(os.Stderr, `Usage: revealgo [options] [MARKDOWN FILE]
 
 Options:
 `)
@@ -61,7 +61,7 @@ Options:
 		} else {
 			o = fmt.Sprintf("--%s", tag.Get("long"))
 		}
-		fmt.Fprintf(	os.Stderr, "  %-21s %s\n", o, tag.Get("description") )
+		fmt.Fprintf(os.Stderr, "  %-21s %s\n", o, tag.Get("description"))
 	}
 }
 
