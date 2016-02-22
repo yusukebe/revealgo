@@ -68,7 +68,7 @@ You can add slide attributes like above.
 
 ### Customize Theme
 
-Get default theme:
+While `revealgo` is running, open another terminal and get the theme file `black.css`:
 
 ```
 $ curl http://localhost:3000/revealjs/css/theme/black.css > original.css
@@ -80,15 +80,15 @@ Edit `original.css`, And then run `revealgo` with `--theme` option:
 $ revealgo --theme original.css slide.md
 ```
 
-### Customize Configuration
+### Customize Slide Configurations
 
-While `revealgo` is running, open another terminal and get the default `index.html`:
+Get the default slide HTML file:
 
 ```
-$ curl http://localhost:3000/ > index.html
+$ curl http://localhost:3000/ > slide.html
 ```
 
-Edit `index.html`, and then open `http://localhost:3000/index.html` with your browser. A slide with the modified configuration will come up.
+Edit `slide.html`, and then open `http://localhost:3000/slide.html` with your browser. A slide with the modified configurations will come up.
 
 ## See Also
 
