@@ -80,6 +80,16 @@ Edit `original.css`, And then run `revealgo` with `--theme` option:
 $ revealgo --theme original.css slide.md
 ```
 
+### Customize Configuration
+
+While `revealgo` is running, open another terminal and get the default `index.html`:
+
+```
+$ curl http://localhost:3000/ > index.html
+```
+
+Edit `index.html`, and then open `http://localhost:3000/index.html` with your browser. A slide with the modified configuration will come up.
+
 ## See Also
 
 * reveal.js <https://github.com/hakimel/reveal.js/>
