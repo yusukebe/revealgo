@@ -89,10 +89,13 @@ func (h *rootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func detectContentType(path string, data []byte) string {
-	if strings.HasSuffix(path, ".css") {
+	switch {
+	case strings.HasSuffix(path, ".css"):
 		return "text/css"
-	} else if strings.HasSuffix(path, ".js") {
+	case strings.HasSuffix(path, ".js"):
 		return "application/javascript"
+	case strings.HasSuffix(path, ".svg"):
+		return "image/svg+xml"
 	}
 	return http.DetectContentType(data)
 }
