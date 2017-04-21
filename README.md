@@ -27,6 +27,7 @@ Available options:
 --theme               slide theme or original css file name. default themes:
                       beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white
 --transition          transition effect for slides: default, cube, page, concave, zoom, linear, fade, none
+--watch				  live reload slide on MARKDOWN.MD change
 ```
 
 ### Screenshots
@@ -42,6 +43,15 @@ Open the server address with your web browser:
 ### Sample Makrdown
 
 ```
+theme: blood
+revealOptions:
+  transition: '"slide"'
+  controls: false
+  progress: true
+  history: true
+  center: true
+
++++
 ## This is an H2 Title
 
 Description...

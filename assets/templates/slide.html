@@ -16,30 +16,38 @@
   <body>
     <div class="reveal">
       <div class="slides">
-        <section data-markdown="{{.Path}}"
-                 data-separator="^---"
-                 data-separator-vertical="^___"
-                 data-charset="utf-8"
-           data-notes="^Note:">
-          <script type="text/template">
-            ## Page title
-
-            A paragraph with some text and a [link](http://hakim.se).
-          </script>
+        {{ range $key, $mds := .Slides }}
+        <section>
+          {{ range $k, $md := $mds }}
+            <section data-markdown>
+            <script type="text/template">
+              {{$md}}
+            </script>
+            </section>
+          {{end}}
         </section>
+        {{end}}
       </div>
     </div>
     <script src="revealjs/lib/js/head.min.js"></script>
     <script src="revealjs/js/reveal.js"></script>
+    {{if eq true .Watch }}
+    <script src="http://{{.Host}}:35729/livereload.js"></script>
+    {{end}}
 
     <script>
       Reveal.initialize({
-        controls: true,
-        progress: true,
-        history: true,
-        center: true,
+        // controls: true,
+        // progress: true,
+        // history: true,
+        // center: true,
+        {{ range $key, $value := .RevealOptions }}
+        {{$key}}:{{$value}},
+        {{ end }}
+
+        // transition: Reveal.getQueryHash().transition || '{{.Transition}}', // default/cube/page/concave/zoom/linear/fade/none
+
         theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
-        transition: Reveal.getQueryHash().transition || '{{.Transition}}', // default/cube/page/concave/zoom/linear/fade/none
         // Optional libraries used to extend on reveal.js
         dependencies: [
           { src: 'revealjs/lib/js/classList.js', condition: function() { return !document.body.classList; } },

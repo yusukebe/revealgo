@@ -2,6 +2,7 @@ package revealgo
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"reflect"
 	"strings"
@@ -16,6 +17,7 @@ type CLIOptions struct {
 	Port       int    `short:"p" long:"port" description:"tcp port number of this server. default is 3000."`
 	Theme      string `long:"theme" description:"slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
 	Transition string `long:"transition" description:"transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"default"`
+	Watch      bool   `long:"watch" description:"watch for md file change and reload" default:"false"`
 }
 
 func (cli *CLI) Run() {
@@ -29,24 +31,44 @@ func (cli *CLI) Run() {
 		os.Exit(0)
 	}
 
+	server := Server{
+		port: opts.Port,
+	}
 	_, err = os.Stat(opts.Theme)
 	originalTheme := false
 	if err == nil {
 		originalTheme = true
 	}
 
-	server := Server{
-		port: opts.Port,
-	}
 	param := ServerParam{
 		Path:          args[0],
 		Theme:         addExtention(opts.Theme, "css"),
-		Transition:    opts.Transition,
 		OriginalTheme: originalTheme,
+		Host:          GetLocalIP(),
+		Watch:         opts.Watch,
+		RevealOptions: map[string]interface{}{
+			"transition": "'" + opts.Transition + "'",
+		},
 	}
+
 	server.Serve(param)
 }
 
+func GetLocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addrs {
+		// check the address type and if it is not a loopback the display it
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return ""
+}
 func showHelp() {
 	fmt.Fprint(os.Stderr, `Usage: revealgo [options] [MARKDOWN FILE]
 
