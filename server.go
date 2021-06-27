@@ -1,6 +1,7 @@
 package revealgo
 
 import (
+	"embed"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -11,6 +12,12 @@ import (
 	"strings"
 	"text/template"
 )
+
+//go:embed assets/revealjs
+var revealjs embed.FS
+
+//go:embed assets/templates/slide.html
+var slideTemplate string
 
 type Server struct {
 	port int
@@ -42,7 +49,7 @@ type assetHandler struct {
 
 func (h *assetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	filepath := h.assetPath + r.URL.Path
-	data, err := Asset(filepath)
+	data, err := revealjs.ReadFile(filepath)
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -69,14 +76,8 @@ func (h *rootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	data, err := Asset("assets/templates/slide.html")
-	if err != nil {
-		log.Printf("error:%v", err)
-		http.NotFound(w, r)
-		return
-	}
 	tmpl := template.New("slide template")
-	tmpl.Parse(string(data))
+	tmpl.Parse(slideTemplate)
 	if err != nil {
 		log.Printf("error:%v", err)
 		http.NotFound(w, r)
