@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <base href="/"> <!-- Force all the relative paths to lookup from / -->
     <link rel="stylesheet" href="revealjs/css/reveal.css">
     <link rel="stylesheet" {{if .OriginalTheme}} href="{{.Theme}}" {{else}} href="revealjs/css/theme/{{.Theme}}" {{end}} id="theme">
     <link rel="stylesheet" href="revealjs/lib/css/zenburn.css">
@@ -30,7 +31,6 @@
       </div>
     </div>
     <script src="revealjs/js/reveal.js"></script>
-
     <script>
       Reveal.initialize({
         controls: true,
@@ -39,8 +39,21 @@
         center: true,
         theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
         transition: Reveal.getQueryHash().transition || '{{.Transition}}', // default/cube/page/concave/zoom/linear/fade/none
+        {{if (ne .Multiplex.Secret "")}}
+        multiplex: {
+          secret: {{if .Multiplex.IsMaster}}'{{.Multiplex.Secret}}'{{else}}null{{end}},
+          id: '{{.Multiplex.Identifier}}',
+          url: '/'
+        },
+        {{end}}
+
         // Optional libraries used to extend on reveal.js
         dependencies: [
+          {{if (ne .Multiplex.Secret "")}}
+          // TODO: Add socket.io v1.6.0 as static asset
+          { src: 'https://cdn.socket.io/socket.io-1.6.0.js', async: true },
+          { src: '{{if .Multiplex.IsMaster}}revealjs/plugin/multiplex/master.js{{else}}revealjs/plugin/multiplex/client.js{{end}}', async: true },
+          {{end}}
           { src: 'revealjs/lib/js/classList.js', condition: function() { return !document.body.classList; } },
           { src: 'revealjs/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
           { src: 'revealjs/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },

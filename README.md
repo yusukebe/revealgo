@@ -41,7 +41,7 @@ Open the server address with your web browser:
 
 ### Sample Makrdown
 
-```
+```markdown
 ## This is an H2 Title
 
 Description...
