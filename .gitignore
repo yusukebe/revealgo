@@ -15,6 +15,7 @@ _test
 *.test
 *.prof
 tmp/
-example.md
+/example.md
 cover.out
 original.css
+.vscode/

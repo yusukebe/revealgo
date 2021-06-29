@@ -9,38 +9,39 @@ import (
 )
 
 func TestDetectContentType(t *testing.T) {
-	actual := detectContentType("/css/moon.css", []byte("h1 {};"))
-	expected := "text/css"
-	if actual != expected {
-		t.Errorf("got %v\n want %v", actual, expected)
+	scenarios := []struct {
+		path     string
+		expected string
+	}{
+		{path: "css/moon.css", expected: "text/css"},
+		{path: "js/hello.js", expected: "application/javascript"},
+		{path: "testdata/markdown.svg", expected: "image/svg+xml"},
+		{path: "readme.txt", expected: ""},
 	}
-	actual = detectContentType("/js/hello.js", []byte("console('Hello')"))
-	expected = "application/javascript"
-	if actual != expected {
-		t.Errorf("got %v\n want %v", actual, expected)
-	}
-	actual = detectContentType("/readme.txt", []byte("Hello"))
-	expected = "text/plain; charset=utf-8"
-	if actual != expected {
-		t.Errorf("got %v\n want %v", actual, expected)
+
+	for _, s := range scenarios {
+		actual := detectContentType(s.path)
+		if actual != s.expected {
+			t.Errorf("got %v\n want %v", actual, s.expected)
+		}
 	}
 }
 
-func TestRootHandler(t *testing.T) {
+func TestContentHandler(t *testing.T) {
 	param := ServerParam{
-		Path:       "slide.md",
+		Path:       "testdata/example.md",
 		Theme:      "beige.css",
 		Transition: "fade",
 	}
-	ts := httptest.NewServer(&rootHandler{param: param})
+	ts := httptest.NewServer(contentHandler(param, http.FileServer(http.Dir("."))))
 	defer ts.Close()
 
 	res, err := http.Get(ts.URL)
 	if err != nil {
-		t.Errorf("unexpected\n")
+		t.Fatal("unexpected", err)
 	}
 	if res.StatusCode != 200 {
-		t.Errorf("server status error\n")
+		t.Error("server status error")
 	}
 
 	buf := new(bytes.Buffer)
@@ -53,7 +54,7 @@ func TestRootHandler(t *testing.T) {
 		t.Errorf("content do not match %v\n", match)
 	}
 
-	match = `data-markdown="slide.md"`
+	match = `data-markdown="testdata/example.md"`
 	r = regexp.MustCompile(match)
 	if r.MatchString(s) == false {
 		t.Errorf("content do not match %v\n", match)
@@ -64,10 +65,21 @@ func TestRootHandler(t *testing.T) {
 	if r.MatchString(s) == false {
 		t.Errorf("content do not match %v\n", match)
 	}
+
+	r2, err := http.Get(ts.URL + "/testdata/markdown.svg")
+	if err != nil {
+		t.Fatal("unexpected", err)
+	}
+	if r2.StatusCode != 200 {
+		t.Errorf("server status error\n")
+	}
+	if r2.Header.Get("Content-Type") != "image/svg+xml" {
+		t.Errorf("content type error\n")
+	}
 }
 
 func TestAssetHandler(t *testing.T) {
-	ts := httptest.NewServer(&assetHandler{assetPath: "assets"})
+	ts := httptest.NewServer(assetsHandler("/assets/", http.FileServer(http.FS(revealjs))))
 	defer ts.Close()
 
 	res, err := http.Get(ts.URL + "/revealjs/js/reveal.js")

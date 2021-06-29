@@ -3,12 +3,9 @@ package revealgo
 import (
 	"embed"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"text/template"
 )
@@ -36,60 +33,53 @@ func (server *Server) Serve(param ServerParam) {
 		port = server.port
 	}
 	fmt.Printf("accepting connections at http://*:%d/\n", port)
-	http.Handle("/", &rootHandler{param: param})
-	http.Handle("/revealjs/", &assetHandler{assetPath: "assets"})
+	http.Handle("/", contentHandler(param, http.FileServer(http.Dir("."))))
+	http.Handle("/revealjs/", assetsHandler("/assets/", http.FileServer(http.FS(revealjs))))
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
 }
 
-type assetHandler struct {
-	assetPath string
-}
+func contentHandler(params ServerParam, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if mimeType := detectContentType(r.URL.Path); mimeType != "" {
+			w.Header().Set("Content-Type", mimeType)
+		}
 
-func (h *assetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	filepath := h.assetPath + r.URL.Path
-	data, err := revealjs.ReadFile(filepath)
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-	w = setResponse(w, filepath, data)
-}
-
-type rootHandler struct {
-	param ServerParam
-}
-
-func (h *rootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	urlPath := r.URL.Path
-	path, err := filepath.Rel("./", "."+urlPath)
-	if err != nil {
-		log.Fatalf("error:%v", err)
-	}
-	_, err = os.Stat(path)
-	if err == nil {
-		data, err := ioutil.ReadFile(path)
-		if err == nil {
-			w = setResponse(w, path, data)
+		if r.URL.Path != "/" {
+			h.ServeHTTP(w, r)
 			return
 		}
-	}
 
-	tmpl := template.New("slide template")
-	tmpl.Parse(slideTemplate)
-	if err != nil {
-		log.Printf("error:%v", err)
-		http.NotFound(w, r)
-		return
-	}
-	err = tmpl.Execute(w, h.param)
-	if err != nil {
-		log.Fatalf("error:%v", err)
-	}
+		tmpl, err := template.New("slide template").Parse(slideTemplate)
+		if err != nil {
+			log.Printf("error:%v", err)
+			http.NotFound(w, r)
+			return
+		}
+
+		if err := tmpl.Execute(w, params); err != nil {
+			log.Fatalf("error:%v", err)
+		}
+	})
 }
 
-func detectContentType(path string, data []byte) string {
+func assetsHandler(prefix string, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if mimeType := detectContentType(r.URL.Path); mimeType != "" {
+			w.Header().Set("Content-Type", mimeType)
+		}
+
+		if prefix != "" {
+			r.URL.Path = filepath.Join(prefix, r.URL.Path)
+			r.URL.RawPath = filepath.Join(prefix, r.URL.RawPath)
+		}
+
+		h.ServeHTTP(w, r)
+	})
+}
+
+func detectContentType(path string) string {
 	switch {
 	case strings.HasSuffix(path, ".css"):
 		return "text/css"
@@ -98,15 +88,5 @@ func detectContentType(path string, data []byte) string {
 	case strings.HasSuffix(path, ".svg"):
 		return "image/svg+xml"
 	}
-	return http.DetectContentType(data)
-}
-
-func setResponse(w http.ResponseWriter, path string, data []byte) http.ResponseWriter {
-	mimeType := detectContentType(path, data)
-	w.Header().Set("Content-Type", mimeType)
-	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
-	if _, err := w.Write(data); err != nil {
-		log.Fatal("unable to write data.")
-	}
-	return w
+	return ""
 }
