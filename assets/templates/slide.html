@@ -39,21 +39,20 @@
         center: true,
         theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
         transition: Reveal.getQueryHash().transition || '{{.Transition}}', // default/cube/page/concave/zoom/linear/fade/none
-        {{if (ne .Multiplex.Secret "")}}
+        {{if (ne .Multiplex.Secret "") -}}
         multiplex: {
           secret: {{if .Multiplex.IsMaster}}'{{.Multiplex.Secret}}'{{else}}null{{end}},
           id: '{{.Multiplex.Identifier}}',
           url: '/'
         },
-        {{end}}
+        {{end -}}
 
         // Optional libraries used to extend on reveal.js
         dependencies: [
-          {{if (ne .Multiplex.Secret "")}}
-          // TODO: Add socket.io v1.6.0 as static asset
-          { src: 'https://cdn.socket.io/socket.io-1.6.0.js', async: true },
+          {{if (ne .Multiplex.Secret "") -}}
+          { src: 'socketio/socket.io-1.6.0.js', async: true },
           { src: '{{if .Multiplex.IsMaster}}revealjs/plugin/multiplex/master.js{{else}}revealjs/plugin/multiplex/client.js{{end}}', async: true },
-          {{end}}
+          {{end -}}
           { src: 'revealjs/lib/js/classList.js', condition: function() { return !document.body.classList; } },
           { src: 'revealjs/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
           { src: 'revealjs/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
