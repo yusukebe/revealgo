@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strings"
 
+	"golang.org/x/crypto/bcrypt"
+
 	flags "github.com/jessevdk/go-flags"
 )
 
@@ -16,6 +18,7 @@ type CLIOptions struct {
 	Port       int    `short:"p" long:"port" description:"tcp port number of this server. default is 3000."`
 	Theme      string `long:"theme" description:"slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
 	Transition string `long:"transition" description:"transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"default"`
+	Multiplex  bool   `long:"multiplex" description:"enable slide multiplexing"`
 }
 
 func (cli *CLI) Run() {
@@ -43,6 +46,14 @@ func (cli *CLI) Run() {
 		Theme:         addExtention(opts.Theme, "css"),
 		Transition:    opts.Transition,
 		OriginalTheme: originalTheme,
+	}
+	if opts.Multiplex {
+		password := "this-is-not-a-secret"
+		bytes, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
+		param.Multiplex = MultiplexParam{
+			Secret:     password,
+			Identifier: string(bytes),
+		}
 	}
 	server.Serve(param)
 }
