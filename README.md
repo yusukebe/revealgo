@@ -4,13 +4,13 @@
 
 ## Install
 
-To install, use `go get` with `git clone`:
+To install, use `go install` after `git clone`:
 
 ```
 $ git clone git@github.com:yusukebe/revealgo.git
 $ cd revealgo
 $ git submodule update --init --recursive
-$ go get
+$ go install ./cmd/revealgo
 ```
 
 ## Usage
