@@ -22,11 +22,12 @@ Then access the local web server such as `http://localhost:3000` with Chrome, Fi
 
 Available options:
 
-```
+```text
 -p, --port            tcp port number of this server. default is 3000.
 --theme               slide theme or original css file name. default themes:
                       beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white
 --transition          transition effect for slides: default, cube, page, concave, zoom, linear, fade, none
+--multiplex           enable slide multiplexi
 ```
 
 ### Screenshots
@@ -41,7 +42,7 @@ Open the server address with your web browser:
 
 ### Sample Makrdown
 
-```
+```markdown
 ## This is an H2 Title
 
 Description...
@@ -90,6 +91,26 @@ $ curl http://localhost:3000/ > slide.html
 
 Edit `slide.html`, and then open `http://localhost:3000/slide.html` with your browser. A slide with the modified configurations will come up.
 
+### Using slide multiplex
+
+> The multiplex plugin allows your audience to follow the slides of the
+> presentation you are controlling on their own phone, tablet or laptop
+>
+> --- [reveal.js site](https://revealjs.com/multiplex/)
+
+When `--multiplex` is enabled, the client slides can be found on the `/` path and
+the master ones under `/master/`. The master presentation will push its changes
+to all the client ones for every transition, is like having a remote control!
+
+For example, your laptop's IP address in the local network is `192.168.100.10`
+and you are using the port `3000`, so your audience should see the slides on
+`http://192.168.100.10:3000/`, and you should be able to control their slides
+through `http://192.168.100.10:3000/master/`.
+
+**NOTE**: Bear in mind multiplex feature will not work as expected when 1) the
+presenter computer firewall denies incomig traffic or 2) the local network
+does not allow traffic between devices on the port you picked
+
 ## See Also
 
 * reveal.js <https://github.com/hakimel/reveal.js/>
@@ -98,4 +119,3 @@ Edit `slide.html`, and then open `http://localhost:3000/slide.html` with your br
 ## Author
 
 Yusuke Wada <http://github.com/yusukebe>
-
