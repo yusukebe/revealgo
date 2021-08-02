@@ -50,7 +50,7 @@
         // Optional libraries used to extend on reveal.js
         dependencies: [
           {{if (ne .Multiplex.Secret "") -}}
-          { src: 'socketio/socket.io-1.6.0.js', async: true },
+          { src: 'socketio/socket.io.js', async: true },
           { src: '{{if .Multiplex.IsMaster}}revealjs/plugin/multiplex/master.js{{else}}revealjs/plugin/multiplex/client.js{{end}}', async: true },
           {{end -}}
           { src: 'revealjs/lib/js/classList.js', condition: function() { return !document.body.classList; } },

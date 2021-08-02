@@ -1,3 +1,6 @@
 [submodule "assets/revealjs"]
 	path = assets/revealjs
 	url = git@github.com:hakimel/reveal.js.git
+[submodule "assets/socketio"]
+	path = assets/socketio
+	url = git@github.com:socketio/socket.io-client.git
