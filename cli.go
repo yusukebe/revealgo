@@ -15,6 +15,7 @@ type CLI struct {
 }
 
 type CLIOptions struct {
+	Help       bool   `short:"h" long:"help" description:"show help message"`
 	Port       int    `short:"p" long:"port" description:"tcp port number of this server. default is 3000."`
 	Theme      string `long:"theme" description:"slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
 	Transition string `long:"transition" description:"transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"default"`
@@ -27,7 +28,7 @@ func (cli *CLI) Run() {
 		fmt.Printf("error:%v\n", err)
 		os.Exit(1)
 	}
-	if len(args) < 1 {
+	if len(args) < 1 || opts.Help {
 		showHelp()
 		os.Exit(0)
 	}
