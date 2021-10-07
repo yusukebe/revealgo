@@ -20,6 +20,7 @@ type CLIOptions struct {
 	Theme      string `long:"theme" description:"slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
 	Transition string `long:"transition" description:"transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"default"`
 	Multiplex  bool   `long:"multiplex" description:"enable slide multiplexing"`
+	Version    bool   `short:"v" long:"version" description:"show the version"`
 }
 
 func (cli *CLI) Run() {
@@ -28,6 +29,12 @@ func (cli *CLI) Run() {
 		fmt.Printf("error:%v\n", err)
 		os.Exit(1)
 	}
+
+	if opts.Version {
+		showVersion()
+		os.Exit(0)
+	}
+
 	if len(args) < 1 || opts.Help {
 		showHelp()
 		os.Exit(0)
@@ -75,6 +82,10 @@ Options:
 		}
 		fmt.Fprintf(os.Stderr, "  %-21s %s\n", o, tag.Get("description"))
 	}
+}
+
+func showVersion() {
+	fmt.Fprintf(os.Stderr, "revealgo version %s\n", Version)
 }
 
 func parseOptions() (*CLIOptions, []string, error) {
