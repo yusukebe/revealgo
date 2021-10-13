@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
-	"strings"
 	"text/template"
 
 	socketio "github.com/googollee/go-socket.io"
@@ -161,16 +160,4 @@ func assetsHandler(prefix string, h http.Handler) http.Handler {
 
 		h.ServeHTTP(w, r)
 	})
-}
-
-func detectContentType(path string) string {
-	switch {
-	case strings.HasSuffix(path, ".css"):
-		return "text/css"
-	case strings.HasSuffix(path, ".js"):
-		return "application/javascript"
-	case strings.HasSuffix(path, ".svg"):
-		return "image/svg+xml"
-	}
-	return ""
 }
