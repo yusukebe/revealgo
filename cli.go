@@ -2,44 +2,75 @@ package revealgo
 
 import (
 	"fmt"
+	"io"
 	"os"
-	"reflect"
 
 	"golang.org/x/crypto/bcrypt"
 
 	flags "github.com/jessevdk/go-flags"
 )
 
+const (
+	ExitCodeOK    = 0
+	ExitCodeError = 1
+)
+
 type CLI struct {
+	OutStream, ErrStream io.Writer
+	options              *CLIOptions
+	parser               *flags.Parser
 }
 
 type CLIOptions struct {
-	Help       bool   `short:"h" long:"help" description:"show help message"`
-	Port       int    `short:"p" long:"port" description:"tcp port number of this server. default is 3000."`
-	Theme      string `long:"theme" description:"slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
-	Transition string `long:"transition" description:"transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"default"`
-	Multiplex  bool   `long:"multiplex" description:"enable slide multiplexing"`
-	Version    bool   `short:"v" long:"version" description:"show the version"`
+	Port       int    `short:"p" long:"port" description:"TCP port number of this server. default is 3000."`
+	Theme      string `long:"theme" description:"Slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
+	Transition string `long:"transition" description:"Transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"default"`
+	Multiplex  bool   `long:"multiplex" description:"Enable slide multiplexing"`
+	Version    bool   `short:"v" long:"version" description:"Show the version"`
 }
 
-func (cli *CLI) Run() {
-	opts, args, err := parseOptions()
+func (cli *CLI) Run(args []string) int {
+	cli.init()
+
+	args, err := cli.parser.ParseArgs(args)
+
 	if err != nil {
-		fmt.Printf("error:%v\n", err)
-		os.Exit(1)
+		flagError := err.(*flags.Error)
+		if flagError.Type == flags.ErrHelp {
+			cli.showHelp()
+			return ExitCodeOK
+		}
+		if flagError.Type == flags.ErrUnknownFlag {
+			fmt.Fprintf(cli.OutStream, "Use --help to view all available options.\n")
+		} else {
+			fmt.Fprintf(cli.OutStream, "Error parsing flags: %s\n", err)
+		}
+		return ExitCodeError
 	}
 
-	if opts.Version {
-		showVersion()
-		os.Exit(0)
+	if cli.options.Version {
+		cli.showVersion()
+		return ExitCodeOK
 	}
 
-	if len(args) < 1 || opts.Help {
-		showHelp()
-		os.Exit(0)
+	if len(args) == 0 {
+		cli.showHelp()
+		return ExitCodeOK
 	}
 
-	_, err = os.Stat(opts.Theme)
+	cli.serve(args)
+
+	return ExitCodeOK
+}
+
+func (cli *CLI) init() {
+	cli.options = &CLIOptions{}
+	cli.parser = cli.newParser()
+}
+
+func (cli *CLI) serve(args []string) {
+	opts := cli.options
+	_, err := os.Stat(opts.Theme)
 	originalTheme := false
 	if err == nil {
 		originalTheme = true
@@ -65,34 +96,17 @@ func (cli *CLI) Run() {
 	server.Serve(param)
 }
 
-func showHelp() {
-	fmt.Fprint(os.Stderr, `Usage: revealgo [options] [MARKDOWN FILE]
-
-Options:
-`)
-	t := reflect.TypeOf(CLIOptions{})
-	for i := 0; i < t.NumField(); i++ {
-		tag := t.Field(i).Tag
-		var o string
-		if s := tag.Get("short"); s != "" {
-			o = fmt.Sprintf("-%s, --%s", tag.Get("short"), tag.Get("long"))
-		} else {
-			o = fmt.Sprintf("--%s", tag.Get("long"))
-		}
-		fmt.Fprintf(os.Stderr, "  %-21s %s\n", o, tag.Get("description"))
-	}
+func (cli *CLI) showHelp() {
+	cli.parser.WriteHelp(cli.OutStream)
 }
 
-func showVersion() {
-	fmt.Fprintf(os.Stderr, "revealgo version %s\n", Version)
+func (cli *CLI) showVersion() {
+	fmt.Fprintf(cli.OutStream, "revealgo version %s\n", Version)
 }
 
-func parseOptions() (*CLIOptions, []string, error) {
-	opts := &CLIOptions{}
-	p := flags.NewParser(opts, flags.PrintErrors)
-	args, err := p.Parse()
-	if err != nil {
-		return nil, nil, err
-	}
-	return opts, args, nil
+func (cli *CLI) newParser() *flags.Parser {
+	parser := flags.NewParser(cli.options, flags.HelpFlag|flags.PassDoubleDash)
+	parser.Name = "revealgo"
+	parser.Usage = "[options] [MARKDOWN FILE]"
+	return parser
 }
