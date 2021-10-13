@@ -8,25 +8,6 @@ import (
 	"testing"
 )
 
-func TestDetectContentType(t *testing.T) {
-	scenarios := []struct {
-		path     string
-		expected string
-	}{
-		{path: "css/moon.css", expected: "text/css"},
-		{path: "js/hello.js", expected: "application/javascript"},
-		{path: "testdata/markdown.svg", expected: "image/svg+xml"},
-		{path: "readme.txt", expected: ""},
-	}
-
-	for _, s := range scenarios {
-		actual := detectContentType(s.path)
-		if actual != s.expected {
-			t.Errorf("got %v\n want %v", actual, s.expected)
-		}
-	}
-}
-
 func TestContentHandler(t *testing.T) {
 	param := ServerParam{
 		Path:       "testdata/example.md",

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"reflect"
-	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -96,12 +95,4 @@ func parseOptions() (*CLIOptions, []string, error) {
 		return nil, nil, err
 	}
 	return opts, args, nil
-}
-
-func addExtention(path string, ext string) string {
-	if strings.HasSuffix(path, fmt.Sprintf(".%s", ext)) {
-		return path
-	}
-	path = fmt.Sprintf("%s.%s", path, ext)
-	return path
 }
