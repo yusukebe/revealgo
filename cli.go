@@ -110,3 +110,4 @@ func (cli *CLI) newParser() *flags.Parser {
 	parser.Usage = "[options] [MARKDOWN FILE]"
 	return parser
 }
+
