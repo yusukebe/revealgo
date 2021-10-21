@@ -30,11 +30,13 @@ type Server struct {
 }
 
 type ServerParam struct {
-	Path          string
-	Theme         string
-	OriginalTheme bool
-	Transition    string
-	Multiplex     MultiplexParam
+	Path              string
+	Theme             string
+	OriginalTheme     bool
+	Transition        string
+	Separator         string
+	VerticalSeparator string
+	Multiplex         MultiplexParam
 }
 
 type MultiplexParam struct {

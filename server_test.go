@@ -10,9 +10,11 @@ import (
 
 func TestContentHandler(t *testing.T) {
 	param := ServerParam{
-		Path:       "testdata/example.md",
-		Theme:      "beige.css",
-		Transition: "fade",
+		Path:              "testdata/example.md",
+		Theme:             "beige.css",
+		Transition:        "fade",
+		Separator:         "^===",
+		VerticalSeparator: "^----",
 	}
 	ts := httptest.NewServer(contentHandler(param, http.FileServer(http.Dir("."))))
 	defer ts.Close()
@@ -29,22 +31,21 @@ func TestContentHandler(t *testing.T) {
 	buf.ReadFrom(res.Body)
 	s := buf.String()
 
-	match := "revealjs/css/theme/beige.css"
-	r := regexp.MustCompile(match)
-	if r.MatchString(s) == false {
-		t.Errorf("content do not match %v\n", match)
+	matches := []struct {
+		regexp string
+	}{
+		{regexp: "revealjs/css/theme/beige.css"},
+		{regexp: `data-markdown="testdata/example.md"`},
+		{regexp: `|| 'zoom',`},
+		{regexp: `data-separator="\^==="`},
+		{regexp: `data-separator-vertical="\^----"`},
 	}
 
-	match = `data-markdown="testdata/example.md"`
-	r = regexp.MustCompile(match)
-	if r.MatchString(s) == false {
-		t.Errorf("content do not match %v\n", match)
-	}
-
-	match = `|| 'zoom',`
-	r = regexp.MustCompile(match)
-	if r.MatchString(s) == false {
-		t.Errorf("content do not match %v\n", match)
+	for _, m := range matches {
+		r := regexp.MustCompile(m.regexp)
+		if r.MatchString(s) == false {
+			t.Errorf("content do not match %v\n", m.regexp)
+		}
 	}
 
 	r2, err := http.Get(ts.URL + "/testdata/markdown.svg")
