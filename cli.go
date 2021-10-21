@@ -22,7 +22,7 @@ type CLI struct {
 }
 
 type CLIOptions struct {
-	Port              int    `short:"p" long:"port" description:"TCP port number of this server. default is 3000."`
+	Port              int    `short:"p" long:"port" description:"TCP port number of this server" default:"3000"`
 	Theme             string `long:"theme" description:"Slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
 	Transition        string `long:"transition" description:"Transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"default"`
 	Separator         string `long:"separator" description:"Horizontal slide separator characters" default:"^---"`
