@@ -22,11 +22,13 @@ type CLI struct {
 }
 
 type CLIOptions struct {
-	Port       int    `short:"p" long:"port" description:"TCP port number of this server. default is 3000."`
-	Theme      string `long:"theme" description:"Slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
-	Transition string `long:"transition" description:"Transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"default"`
-	Multiplex  bool   `long:"multiplex" description:"Enable slide multiplexing"`
-	Version    bool   `short:"v" long:"version" description:"Show the version"`
+	Port              int    `short:"p" long:"port" description:"TCP port number of this server. default is 3000."`
+	Theme             string `long:"theme" description:"Slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
+	Transition        string `long:"transition" description:"Transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"default"`
+	Separator         string `long:"separator" description:"Horizontal slide separator characters" default:"^---"`
+	VerticalSeparator string `long:"vertical-separator" description:"Vertical slide separator characters" default:"^___"`
+	Multiplex         bool   `long:"multiplex" description:"Enable slide multiplexing"`
+	Version           bool   `short:"v" long:"version" description:"Show the version"`
 }
 
 func (cli *CLI) Run(args []string) int {
@@ -80,10 +82,12 @@ func (cli *CLI) serve(args []string) {
 		port: opts.Port,
 	}
 	param := ServerParam{
-		Path:          args[0],
-		Theme:         addExtention(opts.Theme, "css"),
-		Transition:    opts.Transition,
-		OriginalTheme: originalTheme,
+		Path:              args[0],
+		Theme:             addExtention(opts.Theme, "css"),
+		Transition:        opts.Transition,
+		OriginalTheme:     originalTheme,
+		Separator:         opts.Separator,
+		VerticalSeparator: opts.VerticalSeparator,
 	}
 	if opts.Multiplex {
 		password := "this-is-not-a-secret"
@@ -110,4 +114,3 @@ func (cli *CLI) newParser() *flags.Parser {
 	parser.Usage = "[options] [MARKDOWN FILE]"
 	return parser
 }
-

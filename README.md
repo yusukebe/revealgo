@@ -26,11 +26,13 @@ Then access the local web server such as `http://localhost:3000` with Chrome, Fi
 Available options:
 
 ```text
--p, --port            tcp port number of this server. default is 3000.
---theme               slide theme or original css file name. default themes:
+-p, --port            TCP port number of this server. default is 3000.
+--theme               Slide theme or original css file name. default themes:
                       beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white
---transition          transition effect for slides: default, cube, page, concave, zoom, linear, fade, none
---multiplex           enable slide multiplexi
+--transition          Transition effect for slides: default, cube, page, concave, zoom, linear, fade, none
+--separator           Horizontal slide separator characters (default: ^---)
+--vertical-separator  Vertical slide separator characters (default: ^___)
+--multiplex           Enable slide multiplex
 ```
 
 ### Screenshots
@@ -45,7 +47,7 @@ Open the server address with your web browser:
 
 ### Sample Makrdown
 
-```markdown
+```text
 ## This is an H2 Title
 
 Description...
@@ -56,9 +58,9 @@ The horizontal slide separator characters are '---'
 
 # This is second title
 
-The vertical slide separator characters are '\_\_\_'
+The vertical slide separator characters are '^___'
 
----
+___
 
 ## This is a third title
 
