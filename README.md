@@ -56,15 +56,16 @@ The horizontal slide separator characters are '---'
 
 # This is second title
 
-The vertical slide separator characters are '___'
+The vertical slide separator characters are '\_\_\_'
 
-___
+---
 
 ## This is a third title
 
 ---
 
 ## This is a forth title
+
 <!-- .slide: data-background="#f70000" data-transition="page" -->
 
 You can add slide attributes like above.
@@ -114,11 +115,24 @@ through `http://192.168.100.10:3000/master/`.
 presenter computer firewall denies incomig traffic or 2) the local network
 does not allow traffic between devices on the port you picked
 
-## See Also
+## Related projects
 
-* reveal.js <https://github.com/hakimel/reveal.js/>
-* App::revealup <https://github.com/yusukebe/App-revealup>
+- reveal.js <https://github.com/hakimel/reveal.js/>
+- App::revealup <https://github.com/yusukebe/App-revealup>
+- reveal-md <https://github.com/webpro/reveal-md>
+
+## Contributing
+
+See [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md).
+
+## Contributors
+
+Thanks to all [contributors](https://github.com/yusukebe/revealgo/graphs/contributors)!
 
 ## Author
 
 Yusuke Wada <http://github.com/yusukebe>
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
