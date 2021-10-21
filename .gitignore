@@ -19,3 +19,4 @@ tmp/
 cover.out
 original.css
 .vscode/
+dist/
