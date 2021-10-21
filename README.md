@@ -26,10 +26,10 @@ Then access the local web server such as `http://localhost:3000` with Chrome, Fi
 Available options:
 
 ```text
--p, --port            TCP port number of this server. default is 3000.
+-p, --port            TCP port number of this server (default: 3000)
 --theme               Slide theme or original css file name. default themes:
-                      beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white
---transition          Transition effect for slides: default, cube, page, concave, zoom, linear, fade, none
+                      beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white (default: black.css)
+--transition          Transition effect for slides: default, cube, page, concave, zoom, linear, fade, none (default: default)
 --separator           Horizontal slide separator characters (default: ^---)
 --vertical-separator  Vertical slide separator characters (default: ^___)
 --multiplex           Enable slide multiplex
