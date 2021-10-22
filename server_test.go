@@ -28,7 +28,7 @@ func TestContentHandler(t *testing.T) {
 	}
 
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(res.Body)
+	_, _ = buf.ReadFrom(res.Body)
 	s := buf.String()
 
 	matches := []struct {
