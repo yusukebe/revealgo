@@ -5,6 +5,8 @@ before:
 build:
   binary: revealgo
   main: cmd/revealgo/reveal.go
+  ldflags:
+  - -s -w -X github.com/yusukebe/revealgo.Version=v{{.Version}}
   goos:
     - darwin
     - linux
