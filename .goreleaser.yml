@@ -39,3 +39,6 @@ archives:
   - LICENSE
 snapshot:
   name_template: SNAPSHOT-{{ .Commit }}
+release:
+  draft: true
+  prerelease: auto
