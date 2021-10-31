@@ -2,9 +2,21 @@
 
 **revealgo** is a small web application for giving Markdown-driven presentations implemented in **Go**! The `revealgo` command starts a local web server to serve the your markdown presentation file with `reveal.js`. The presentation can be viewed in a web browser. The reveal.js library offers comprehensive presenting features such as slide transitions, speaker notes and more.
 
-## Install
+## Installation
 
-To install, use `go install` after `git clone`:
+### Binary
+
+Download the binary from [**GitHub Releases**](https://github.com/yusukebe/revealgo/releases) and install it somewhere in your `$PATH`.
+
+`revealgo` currently provides pre-built binaries for the following:
+
+- macOS / Darwin
+- Windows
+- Linux
+
+### Source
+
+To install from the source, use `go install` after `git clone`:
 
 ```
 $ git clone git@github.com:yusukebe/revealgo.git
