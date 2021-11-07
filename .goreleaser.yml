@@ -42,3 +42,13 @@ snapshot:
 release:
   draft: true
   prerelease: auto
+brews:
+  - tap:
+      owner: yusukebe
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    folder: Formula
+    name: "revealgo"
+    homepage: "https://github.com/yusukebe/revealgo"
+    description: "Markdown driven presentation tool written in Go!"
+    license: "MIT"
