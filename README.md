@@ -6,13 +6,15 @@
 
 ### Binary
 
-Download the binary from [**GitHub Releases**](https://github.com/yusukebe/revealgo/releases) and install it somewhere in your `$PATH`.
+Download the binary from [**GitHub Releases**](https://github.com/yusukebe/revealgo/releases) and install it somewhere in your `$PATH`. `revealgo` currently provides pre-built binaries for Linux, macOS and Windows.
 
-`revealgo` currently provides pre-built binaries for the following:
+### Homebrew
 
-- macOS / Darwin
-- Windows
-- Linux
+You can also install via [hombrew](https://brew.sh) on macOS:
+
+```
+$ brew install yusukebe/tap/revealgo
+```
 
 ### Source
 

@@ -1,12 +1,12 @@
 project_name: revealgo
 before:
   hooks:
-  - git submodule update --init --recursive
+    - git submodule update --init --recursive
 build:
   binary: revealgo
   main: cmd/revealgo/reveal.go
   ldflags:
-  - -s -w -X github.com/yusukebe/revealgo.Version=v{{.Version}}
+    - -s -w -X github.com/yusukebe/revealgo.Version=v{{.Version}}
   goos:
     - darwin
     - linux
@@ -22,23 +22,33 @@ build:
   env:
     - CGO_ENABLED=0
 archives:
-- name_template: "{{.Binary}}_{{ .Version }}_{{.Os}}-{{.Arch}}"
-  replacements:
-    amd64: 64bit
-    386: 32bit
-    arm: ARM
-    arm64: ARM64
-    darwin: macOS
-    linux: Linux
-    windows: Windows
-  format: tar.gz
-  format_overrides:
-    - goos: windows
-      format: zip
-  files:
-  - LICENSE
+  - name_template: "{{.Binary}}_{{ .Version }}_{{.Os}}-{{.Arch}}"
+    replacements:
+      amd64: 64bit
+      386: 32bit
+      arm: ARM
+      arm64: ARM64
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
 snapshot:
   name_template: SNAPSHOT-{{ .Commit }}
 release:
   draft: true
   prerelease: auto
+brews:
+  - tap:
+      owner: yusukebe
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    folder: Formula
+    name: "revealgo"
+    homepage: "https://github.com/yusukebe/revealgo"
+    description: "Markdown driven presentation tool written in Go!"
+    license: "MIT"
