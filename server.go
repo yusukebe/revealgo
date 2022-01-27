@@ -76,6 +76,7 @@ func (server *Server) Serve(param ServerParam) {
 		fmt.Printf("master slides can be found at http://*:%d/master/\n", port)
 	}
 
+	go openBrowser(port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
