@@ -24,6 +24,7 @@ type CLI struct {
 type CLIOptions struct {
 	Port              int    `short:"p" long:"port" description:"TCP port number of this server" default:"3000"`
 	Theme             string `long:"theme" description:"Slide theme or original css file name. default themes: beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white" default:"black.css"`
+	DisableAutoOpen   bool   `long:"disable-auto-open" description:"Disable automatic opening of the browser"`
 	Transition        string `long:"transition" description:"Transition effect for slides: default, cube, page, concave, zoom, linear, fade, none" default:"default"`
 	Separator         string `long:"separator" description:"Horizontal slide separator characters" default:"^---"`
 	VerticalSeparator string `long:"vertical-separator" description:"Vertical slide separator characters" default:"^___"`
@@ -86,6 +87,7 @@ func (cli *CLI) serve(args []string) {
 		Theme:             addExtention(opts.Theme, "css"),
 		Transition:        opts.Transition,
 		OriginalTheme:     originalTheme,
+		DisableAutoOpen:   opts.DisableAutoOpen,
 		Separator:         opts.Separator,
 		VerticalSeparator: opts.VerticalSeparator,
 	}

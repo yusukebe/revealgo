@@ -33,6 +33,7 @@ type ServerParam struct {
 	Path              string
 	Theme             string
 	OriginalTheme     bool
+	DisableAutoOpen   bool
 	Transition        string
 	Separator         string
 	VerticalSeparator string
@@ -76,7 +77,9 @@ func (server *Server) Serve(param ServerParam) {
 		fmt.Printf("master slides can be found at http://*:%d/master/\n", port)
 	}
 
-	go openBrowser(port)
+	if !param.DisableAutoOpen {
+		go openBrowser(port)
+	}
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
