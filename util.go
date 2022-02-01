@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func openBrowser(port int) error {
+func openBrowser(port int) {
 	<-time.After(100 * time.Millisecond)
 	url := fmt.Sprintf("http://localhost:%d/", port)
 	var args []string
@@ -23,7 +23,9 @@ func openBrowser(port int) error {
 		cmd = "xdg-open"
 	}
 	args = append(args, url)
-	return exec.Command(cmd, args...).Start()
+	if err := exec.Command(cmd, args...).Start(); err != nil {
+		fmt.Printf("error when trying to open browser: %s", err.Error())
+	}
 }
 
 func addExtention(path string, ext string) string {
