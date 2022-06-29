@@ -22,6 +22,9 @@ var revealjs embed.FS
 //go:embed assets/socketio
 var socketiojs embed.FS
 
+//go:embed assets/multiplex
+var multiplex embed.FS
+
 //go:embed assets/templates/slide.html
 var slideTemplate string
 
@@ -73,6 +76,7 @@ func (server *Server) Serve(param ServerParam) {
 		param.Multiplex.IsMaster = true
 		http.Handle("/master/", http.StripPrefix("/master", contentHandler(param, http.FileServer(http.Dir(".")))))
 		http.Handle("/socketio/", assetsHandler("/assets/", http.FileServer(http.FS(socketiojs))))
+		http.Handle("/multiplex/", assetsHandler("/assets/", http.FileServer(http.FS(multiplex))))
 		http.Handle("/socket.io/", socketioServer)
 		fmt.Printf("master slides can be found at http://*:%d/master/\n", port)
 	}
