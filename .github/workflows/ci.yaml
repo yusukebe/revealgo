@@ -8,28 +8,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
           submodules: 'recursive'
-      -
-        name: Set up Go
-        uses: actions/setup-go@v2
+      - name: Set up Go
+        uses: actions/setup-go@v3
         with:
           go-version: 1.17
-      - 
-        name: Lint
+      - name: Lint
         uses: golangci/golangci-lint-action@v2
         with:
           version: v1.29
-      -
-        name: Test
+          skip-go-installation: true
+      - name: Test
         run: |
           go test ./...
-      -
-        name: Check goreleaser configuration
+      - name: Check goreleaser configuration
         uses: goreleaser/goreleaser-action@v2
         with:
           distribution: goreleaser

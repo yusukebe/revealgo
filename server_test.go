@@ -34,7 +34,7 @@ func TestContentHandler(t *testing.T) {
 	matches := []struct {
 		regexp string
 	}{
-		{regexp: "revealjs/css/theme/beige.css"},
+		{regexp: "revealjs/dist/theme/beige.css"},
 		{regexp: `data-markdown="testdata/example.md"`},
 		{regexp: `|| 'zoom',`},
 		{regexp: `data-separator="\^==="`},

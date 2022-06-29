@@ -4,3 +4,6 @@
 [submodule "assets/socketio"]
 	path = assets/socketio
 	url = https://github.com/socketio/socket.io-client.git
+[submodule "assets/multiplex"]
+	path = assets/multiplex
+	url = https://github.com/reveal/multiplex
