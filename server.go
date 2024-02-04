@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"text/template"
 
@@ -36,6 +37,8 @@ type ServerParam struct {
 	Path              string
 	Theme             string
 	OriginalTheme     bool
+	Template          string
+	OriginalTemplate  bool
 	DisableAutoOpen   bool
 	Transition        string
 	Separator         string
@@ -144,7 +147,25 @@ func contentHandler(params ServerParam, h http.Handler) http.Handler {
 			return
 		}
 
-		tmpl, err := template.New("slide template").Parse(slideTemplate)
+		useTemplate := slideTemplate
+
+		if params.OriginalTemplate || params.OriginalTheme {
+			var errOpenTempl error
+			var templByteStream []byte
+			if params.Template != ".html" {
+				templByteStream, errOpenTempl = os.ReadFile(params.Template)
+			} else {
+				tryTemplateFile := fmt.Sprintf("%s/slide.html", filepath.Dir(params.Theme))
+				templByteStream, errOpenTempl = os.ReadFile(tryTemplateFile)
+			}
+			if errOpenTempl != nil {
+				log.Printf("error:%v", errOpenTempl)
+				http.NotFound(w, r)
+				return
+			}
+			useTemplate = string(templByteStream)
+		}
+		tmpl, err := template.New("slide template").Parse(useTemplate)
 		if err != nil {
 			log.Printf("error:%v", err)
 			http.NotFound(w, r)
