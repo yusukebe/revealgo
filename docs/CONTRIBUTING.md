@@ -37,7 +37,7 @@ local environment, a snapshot build can be done by:
 ```shell
 $ git clone https://github.com/yusukebe/revealgo.git
 $ cd revealgo
-$ goreleaser build --snapshot --rm-dist
+$ goreleaser build --snapshot --clean
 $ tree dist
 dist
 ├── config.yaml
@@ -72,7 +72,7 @@ GitHub, regardless of the branch it is associated with. The process goes as foll
 2. The git tag is pushed to `revealgo`'s repository
 3. A GitHub action will take care of the release process:
    - Run linting
-   - Run `goreleaser release --rm-dist`
+   - Run `goreleaser release --clean`
    - Publish new release as a [draft](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
 
 Upon success, the maintainer will take care of updating the release information

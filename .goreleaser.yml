@@ -2,35 +2,37 @@ project_name: revealgo
 before:
   hooks:
     - git submodule update --init --recursive
-build:
-  binary: revealgo
-  main: cmd/revealgo/reveal.go
-  ldflags:
-    - -s -w -X github.com/yusukebe/revealgo.Version=v{{.Version}}
-  goos:
-    - darwin
-    - linux
-    - windows
-  goarch:
-    - 386
-    - amd64
-    - arm
-    - arm64
-  ignore:
-    - goos: windows
-      goarch: arm
-  env:
-    - CGO_ENABLED=0
+builds:
+  - binary: revealgo
+    main: cmd/revealgo/reveal.go
+    ldflags:
+      - -s -w -X github.com/yusukebe/revealgo.Version=v{{.Version}}
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - 386
+      - amd64
+      - arm
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm
+    env:
+      - CGO_ENABLED=0
 archives:
-  - name_template: "{{.Binary}}_{{ .Version }}_{{.Os}}-{{.Arch}}"
-    replacements:
-      amd64: 64bit
-      386: 32bit
-      arm: ARM
-      arm64: ARM64
-      darwin: macOS
-      linux: Linux
-      windows: Windows
+  - name_template: >-
+      {{- .Binary}}_{{ .Version }}_{{.Os}}-{{.Arch}}
+      {{- if eq .Arch "amd64" }}64bit
+      {{- else if eq .Arch "386" }}32bit
+      {{- else if eq .Arch "arm" }}ARM
+      {{- else if eq .Arch "arm64" }}ARM64
+      {{- else if eq .Arch "darwin" }}macOS
+      {{- else if eq .Arch "linux" }}Linux
+      {{- else if eq .Arch "windows" }}Windows
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end -}}
     format: tar.gz
     format_overrides:
       - goos: windows
@@ -43,7 +45,7 @@ release:
   draft: true
   prerelease: auto
 brews:
-  - tap:
+  - repository:
       owner: yusukebe
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
