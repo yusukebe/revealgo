@@ -1,3 +1,3 @@
 package revealgo
 
-var Version string = "v1.2.2"
+var Version string = "v1.3.0"

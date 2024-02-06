@@ -43,10 +43,13 @@ Available options:
 -p, --port            TCP port number of this server (default: 3000)
 --theme               Slide theme or original css file name. default themes:
                       beige, black, blood, league, moon, night, serif, simple, sky, solarized, and white (default: black.css)
+--template            Custom HTML template file name. default template: slide
+--disable-auto-open   Disable automatic opening of the browser
 --transition          Transition effect for slides: default, cube, page, concave, zoom, linear, fade, none (default: default)
 --separator           Horizontal slide separator characters (default: ^---)
 --vertical-separator  Vertical slide separator characters (default: ^___)
---multiplex           Enable slide multiplex
+--multiplex           Enable slide multiplexing
+-v, --version         Show the version
 ```
 
 ### Screenshots
@@ -59,7 +62,7 @@ Open the server address with your web browser:
 
 ![Slides](https://cloud.githubusercontent.com/assets/10682/12741672/f9cda548-c9c1-11e5-9c21-fcaf1af3cdf4.png)
 
-### Sample Makrdown
+### Sample Markdown
 
 ```text
 ## This is an H2 Title
@@ -110,6 +113,14 @@ $ curl http://localhost:3000/ > slide.html
 ```
 
 Edit `slide.html`, and then open `http://localhost:3000/slide.html` with your browser. A slide with the modified configurations will come up.
+
+### Customize Slide template
+
+A custom `slide.html` can also be provided using the `--template` option, or putting a `slide.html` next to your custom theme file.
+This allows you to use templating within your `slide.html`
+
+You could use the `slide.html` output from your localhost, or grab a copy of the orignal asset to use as the base.
+This can be obtained from: <https://github.com/yusukebe/revealgo/blob/master/assets/templates/slide.html>
 
 ### Using slide multiplex
 
